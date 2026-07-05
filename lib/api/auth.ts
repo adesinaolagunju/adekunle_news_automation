@@ -1,11 +1,5 @@
 import { api } from "@/lib/axios";
-import { User } from "@/lib/types";
-
-export interface LoginResponse {
-  user: User;
-  access: string;
-  refresh: string;
-}
+import type { LoginResponse, User } from "@/lib/types";
 
 export const authApi = {
   login: (username: string, password: string) =>

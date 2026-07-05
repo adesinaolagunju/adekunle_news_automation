@@ -2,9 +2,6 @@
 import { create } from "zustand";
 import { 
   SocialPlatform, 
-  PlatformConnectPayload, 
-  PlatformTestPayload,
-  PlatformBulkConfig,
   PlatformConnectionStatus 
 } from "@/lib/types";
 import { platformApi } from "@/lib/api/platforms";
@@ -15,9 +12,6 @@ interface PlatformState {
   // ============ State ============
   items: SocialPlatform[];
   loading: boolean;
-  connecting: boolean;
-  testing: boolean;
-  bulkUpdating: boolean;
   connectionStatus: Record<number, PlatformConnectionStatus | null>;
   
   // ============ CRUD Operations ============
@@ -29,34 +23,17 @@ interface PlatformState {
   remove: (id: number) => Promise<boolean>;
   
   // ============ Platform Management ============
-  connect: (data: PlatformConnectPayload) => Promise<SocialPlatform | null>;
-  updateConnection: (platformName: string, data: { config?: Record<string, unknown>; enabled?: boolean }) => Promise<SocialPlatform | null>;
-  disconnect: (platformName: string) => Promise<boolean>;
   toggle: (id: number) => Promise<void>;
   
-  // ============ Testing ============
-  testConnection: (payload: PlatformTestPayload) => Promise<boolean>;
+  // ============ Status ============
   fetchConnectionStatus: (id: number) => Promise<PlatformConnectionStatus | null>;
   
-  // ============ Bulk Operations ============
-  bulkUpdate: (config: PlatformBulkConfig) => Promise<Record<string, string>>;
-  
-  // ============ Helpers ============
-  getPlatformByName: (name: string) => SocialPlatform | undefined;
-  getEnabledPlatforms: () => SocialPlatform[];
-  getPlatformStatus: (id: number) => string;
-  
-  // ============ Reset ============
-  reset: () => void;
 }
 
 export const usePlatformStore = create<PlatformState>((set, get) => ({
   // ============ Initial State ============
   items: [],
   loading: false,
-  connecting: false,
-  testing: false,
-  bulkUpdating: false,
   connectionStatus: {},
 
   // ============ CRUD Operations ============
@@ -144,53 +121,6 @@ export const usePlatformStore = create<PlatformState>((set, get) => ({
 
   // ============ Platform Management ============
 
-  connect: async (data: PlatformConnectPayload) => {
-    set({ connecting: true });
-    try {
-      const response = await platformApi.connect(data);
-      const platform = response.platform;
-      set({ 
-        items: [platform, ...get().items],
-        connecting: false,
-      });
-      toast.success(response.message || `Platform "${platform.name}" connected successfully`);
-      return platform;
-    } catch (err) {
-      toast.error(apiErrorMessage(err, "Failed to connect platform"));
-      set({ connecting: false });
-      throw err;
-    }
-  },
-
-  updateConnection: async (platformName: string, data: { config?: Record<string, unknown>; enabled?: boolean }) => {
-    try {
-      const response = await platformApi.updateConnection(platformName, data);
-      const platform = response.platform;
-      set({
-        items: get().items.map((p) => (p.id === platform.id ? platform : p)),
-      });
-      toast.success(response.message || `Platform "${platformName}" updated successfully`);
-      return platform;
-    } catch (err) {
-      toast.error(apiErrorMessage(err, "Failed to update platform connection"));
-      throw err;
-    }
-  },
-
-  disconnect: async (platformName: string) => {
-    try {
-      const response = await platformApi.disconnect(platformName);
-      set({
-        items: get().items.filter((p) => p.name !== platformName),
-      });
-      toast.success(response.message || `Platform "${platformName}" disconnected successfully`);
-      return true;
-    } catch (err) {
-      toast.error(apiErrorMessage(err, "Failed to disconnect platform"));
-      throw err;
-    }
-  },
-
   toggle: async (id: number) => {
     try {
       const { message, platform } = await platformApi.toggle(id);
@@ -204,25 +134,7 @@ export const usePlatformStore = create<PlatformState>((set, get) => ({
     }
   },
 
-  // ============ Testing ============
-
-  testConnection: async (payload: PlatformTestPayload) => {
-    set({ testing: true });
-    try {
-      const result = await platformApi.test(payload);
-      if (result.success) {
-        toast.success(result.message || "Connection test successful");
-      } else {
-        toast.error(result.message || "Connection test failed");
-      }
-      set({ testing: false });
-      return result.success;
-    } catch (err) {
-      toast.error(apiErrorMessage(err, "Failed to test connection"));
-      set({ testing: false });
-      throw err;
-    }
-  },
+  // ============ Status ============
 
   fetchConnectionStatus: async (id: number) => {
     try {
@@ -240,51 +152,4 @@ export const usePlatformStore = create<PlatformState>((set, get) => ({
     }
   },
 
-  // ============ Bulk Operations ============
-
-  bulkUpdate: async (config: PlatformBulkConfig) => {
-    set({ bulkUpdating: true });
-    try {
-      const response = await platformApi.bulkUpdate(config);
-      // Refresh the list to get updated data
-      await get().fetchAll();
-      set({ bulkUpdating: false });
-      toast.success(response.message || "Bulk update completed successfully");
-      return response.results;
-    } catch (err) {
-      toast.error(apiErrorMessage(err, "Bulk update failed"));
-      set({ bulkUpdating: false });
-      throw err;
-    }
-  },
-
-  // ============ Helpers ============
-
-  getPlatformByName: (name: string) => {
-    return get().items.find((p) => p.name === name);
-  },
-
-  getEnabledPlatforms: () => {
-    return get().items.filter((p) => p.enabled);
-  },
-
-  getPlatformStatus: (id: number) => {
-    const platform = get().items.find((p) => p.id === id);
-    if (!platform) return "unknown";
-    if (!platform.enabled) return "disabled";
-    return platform.status || "unknown";
-  },
-
-  // ============ Reset ============
-
-  reset: () => {
-    set({
-      items: [],
-      loading: false,
-      connecting: false,
-      testing: false,
-      bulkUpdating: false,
-      connectionStatus: {},
-    });
-  },
 }));

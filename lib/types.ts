@@ -37,7 +37,7 @@ export interface Country {
 
 export interface News {
   id: number;
-  api_news_id: string;
+  api_news_id: number;
   title: string;
   summary: string;
   link: string;
@@ -95,25 +95,6 @@ export interface PlatformConnectPayload {
   enabled?: boolean;
 }
 
-export interface PlatformConnectResponse {
-  message: string;
-  platform: SocialPlatform;
-}
-
-export interface PlatformUpdatePayload {
-  config?: Record<string, unknown>;
-  enabled?: boolean;
-}
-
-export interface PlatformUpdateResponse {
-  message: string;
-  platform: SocialPlatform;
-}
-
-export interface PlatformDisconnectResponse {
-  message: string;
-}
-
 export interface PlatformConnectionStatus {
   platform: string;
   enabled: boolean;
@@ -168,16 +149,62 @@ export interface PlatformBulkConfig {
   [platformName: string]: PlatformBulkConfigEntry;
 }
 
-export interface PlatformBulkConfigResponse {
-  message: string;
-  results: Record<string, string>; // platform_name: status
+// ============ BUFFER ============
+
+export interface BufferConnectPayload {
+  access_token: string;
+  refresh_token?: string;
+  token_expires_at?: string;
 }
 
-export interface PlatformBulkConfigGet {
-  [platformName: string]: {
-    enabled: boolean;
-    config: Record<string, string>; // Values are masked (e.g., "******")
-  };
+export interface BufferAccountStatus {
+  id: number;
+  connected: boolean;
+  connection_status: string;
+  token_expires_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BufferProfile {
+  id?: string;
+  service?: string;
+  service_username?: string;
+  formatted_username?: string;
+  avatar?: string;
+  default?: boolean;
+  schedules?: unknown[];
+}
+
+export interface BufferTestPayload {
+  access_token?: string;
+}
+
+export interface BufferConnectResponse {
+  success: boolean;
+  account: BufferAccountStatus;
+}
+
+export type BufferStatusResponse = BufferAccountStatus | {
+  connected: false;
+  connection_status: 'disconnected';
+};
+
+export interface BufferProfilesResponse {
+  profiles: BufferProfile[];
+}
+
+export interface BufferTestResponse {
+  success: boolean;
+  message: string;
+  user?: Record<string, unknown>;
+}
+
+export interface BufferDisconnectResponse {
+  success: boolean;
+  connected: boolean;
+  connection_status: string;
+  deleted_accounts: number;
 }
 
 // ============ TELEGRAM ============
@@ -194,7 +221,7 @@ export interface TelegramChannel {
   enabled: boolean;
   is_verified: boolean;
   default_hashtags: string;
-  parse_mode: "HTML" | "MarkdownV2" | "Markdown" | string;
+  parse_mode: string;
   subscriber_count: number;
   status: TelegramChannelStatus;
   created_at: string;
@@ -400,47 +427,3 @@ export interface ApiResponse<T> {
   message?: string;
 }
 
-// ============ PLATFORM ICON MAPPING ============
-
-export const PLATFORM_ICONS: Record<PlatformName, string> = {
-  telegram: 'fa-brands fa-telegram',
-  twitter: 'fa-brands fa-x-twitter',
-  facebook: 'fa-brands fa-facebook',
-  instagram: 'fa-brands fa-instagram',
-};
-
-export const PLATFORM_COLORS: Record<PlatformName, string> = {
-  telegram: '#26A5E4',
-  twitter: '#000000', // X brand color
-  facebook: '#1877F2',
-  instagram: '#E4405F',
-};
-
-export const PLATFORM_DISPLAY_NAMES: Record<PlatformName, string> = {
-  telegram: 'Telegram',
-  twitter: 'X (Twitter)',
-  facebook: 'Facebook',
-  instagram: 'Instagram',
-};
-
-export const PLATFORM_CONFIG_FIELDS: Record<PlatformName, { key: string; label: string; type: string; required: boolean }[]> = {
-  telegram: [
-    { key: 'bot_token', label: 'Bot Token', type: 'password', required: true },
-    { key: 'channel_chat_id', label: 'Channel Chat ID', type: 'text', required: true },
-    { key: 'channel_username', label: 'Channel Username (optional)', type: 'text', required: false },
-  ],
-  twitter: [
-    { key: 'api_key', label: 'API Key', type: 'password', required: true },
-    { key: 'api_secret', label: 'API Secret', type: 'password', required: true },
-    { key: 'access_token', label: 'Access Token', type: 'password', required: true },
-    { key: 'access_token_secret', label: 'Access Token Secret', type: 'password', required: true },
-  ],
-  facebook: [
-    { key: 'page_id', label: 'Page ID', type: 'text', required: true },
-    { key: 'access_token', label: 'Access Token', type: 'password', required: true },
-  ],
-  instagram: [
-    { key: 'business_account_id', label: 'Business Account ID', type: 'text', required: true },
-    { key: 'access_token', label: 'Access Token', type: 'password', required: true },
-  ],
-};

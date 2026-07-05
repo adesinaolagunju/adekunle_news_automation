@@ -1,9 +1,7 @@
-// components/social/PlatformCard.tsx
-
 "use client";
 
 import { useState, useEffect } from "react";
-import { Settings2, RefreshCw, Loader2, CheckCircle, XCircle, AlertCircle } from "lucide-react";
+import { Settings2, Loader2, CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
@@ -37,30 +35,20 @@ const PLATFORM_COLORS: Record<string, string> = {
 
 interface PlatformCardProps {
   platform: SocialPlatform;
-  onTest?: () => Promise<void>;
-  onCheckStatus?: () => Promise<void>;
-  getStatus?: () => string;
 }
 
-export function PlatformCard({ 
-  platform, 
-  onTest, 
-  onCheckStatus,
-  getStatus 
-}: PlatformCardProps) {
+export function PlatformCard({ platform }: PlatformCardProps) {
   const toggle = usePlatformStore((s) => s.toggle);
-  const partialUpdate = usePlatformStore((s) => s.partialUpdate);
+  const update = usePlatformStore((s) => s.update);
   const fetchAll = usePlatformStore((s) => s.fetchAll);
-  const testConnection = usePlatformStore((s) => s.testConnection);
   const fetchConnectionStatus = usePlatformStore((s) => s.fetchConnectionStatus);
   const connectionStatus = usePlatformStore((s) => s.connectionStatus);
-  
+
   const [configText, setConfigText] = useState(
     JSON.stringify(platform.config ?? {}, null, 2)
   );
   const [saving, setSaving] = useState(false);
   const [open, setOpen] = useState(false);
-  const [testing, setTesting] = useState(false);
   const [statusDetails, setStatusDetails] = useState<PlatformConnectionStatus | null>(null);
 
   // Load connection status when component mounts
@@ -77,12 +65,9 @@ export function PlatformCard({
     }
   }, [connectionStatus, platform.id]);
 
-  const statusTone = 
-    platform.status === "connected" || platform.status === "configured"
-      ? "success"
-      : platform.status === "pending_verification"
-      ? "warning"
-      : "muted";
+  const statusTone = platform.status === "connected" || platform.status === "configured"
+    ? "success"
+    : "muted";
 
   const getStatusIcon = () => {
     if (!platform.enabled) {
@@ -91,16 +76,12 @@ export function PlatformCard({
     if (platform.status === "connected") {
       return <CheckCircle className="h-4 w-4 text-green-500" />;
     }
-    if (platform.status === "pending_verification") {
-      return <AlertCircle className="h-4 w-4 text-yellow-500" />;
-    }
     return <AlertCircle className="h-4 w-4 text-gray-400" />;
   };
 
   const getStatusLabel = () => {
     if (!platform.enabled) return "Disabled";
-    if (platform.status === "connected") return "Connected ✓";
-    if (platform.status === "pending_verification") return "Pending Verification";
+    if (platform.status === "connected") return "Connected";
     if (platform.status === "configured") return "Configured";
     return platform.status.replace("_", " ");
   };
@@ -115,7 +96,7 @@ export function PlatformCard({
     }
     setSaving(true);
     try {
-      await partialUpdate(platform.id, { config: parsed });
+      await update(platform.id, { config: parsed });
       toast.success(`${PLATFORM_LABEL[platform.name] ?? platform.name} credentials saved`);
       setOpen(false);
       await fetchAll();
@@ -123,30 +104,6 @@ export function PlatformCard({
       // Error is handled by the store
     } finally {
       setSaving(false);
-    }
-  }
-
-  async function handleTest() {
-    setTesting(true);
-    try {
-      const success = await testConnection({
-        platform: platform.name,
-        config: platform.config || {},
-      });
-      if (success) {
-        // Refresh connection status after successful test
-        await fetchConnectionStatus(platform.id);
-      }
-    } finally {
-      setTesting(false);
-    }
-  }
-
-  async function handleCheckStatus() {
-    const status = await fetchConnectionStatus(platform.id);
-    if (status) {
-      setStatusDetails(status);
-      toast.success("Connection status updated");
     }
   }
 
@@ -175,7 +132,6 @@ export function PlatformCard({
     return fields[platform.name] || {};
   };
 
-  // Render config as structured fields for Telegram
   const renderConfigFields = () => {
     const fields = getPlatformConfigFields();
     const config = platform.config || {};
@@ -256,35 +212,6 @@ export function PlatformCard({
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Test Button */}
-            {onTest && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onTest}
-                disabled={testing}
-                title="Test connection"
-              >
-                {testing ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <RefreshCw className="h-4 w-4" />
-                )}
-              </Button>
-            )}
-
-            {/* Check Status Button */}
-            {onCheckStatus && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onCheckStatus}
-                title="Check connection status"
-              >
-                <AlertCircle className="h-4 w-4" />
-              </Button>
-            )}
-
             {/* Configure Button */}
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>
@@ -298,7 +225,7 @@ export function PlatformCard({
               >
                 <div className="space-y-4">
                   {renderConfigFields()}
-                  
+
                   <div className="flex items-center gap-2">
                     <Switch
                       checked={platform.enabled}

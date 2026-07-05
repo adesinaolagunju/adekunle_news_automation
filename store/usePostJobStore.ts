@@ -11,10 +11,12 @@ interface PostJobState {
   filters: PostJobFilters;
   loading: boolean;
   retryingId: number | null;
+  removingId: number | null;
   setFilters: (f: Partial<PostJobFilters>) => void;
   setPage: (p: number) => void;
   fetchList: () => Promise<void>;
   retry: (id: number) => Promise<void>;
+  remove: (id: number) => Promise<void>;
 }
 
 export const usePostJobStore = create<PostJobState>((set, get) => ({
@@ -24,6 +26,7 @@ export const usePostJobStore = create<PostJobState>((set, get) => ({
   filters: {},
   loading: false,
   retryingId: null,
+  removingId: null,
 
   setFilters: (f) => {
     set({ filters: { ...get().filters, ...f }, page: 1 });
@@ -57,6 +60,19 @@ export const usePostJobStore = create<PostJobState>((set, get) => ({
       toast.error(apiErrorMessage(err, "Retry failed"));
     } finally {
       set({ retryingId: null });
+    }
+  },
+
+  remove: async (id) => {
+    set({ removingId: id });
+    try {
+      await postJobApi.remove(id);
+      set({ items: get().items.filter((j) => j.id !== id) });
+      toast.success("Job removed");
+    } catch (err) {
+      toast.error(apiErrorMessage(err, "Failed to remove job"));
+    } finally {
+      set({ removingId: null });
     }
   },
 }));

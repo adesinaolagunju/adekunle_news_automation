@@ -34,4 +34,13 @@ export const newsApi = {
     api
       .post<{ message: string; job_ids: number[] }>(`/news/${id}/repost/`)
       .then((r) => r.data),
+
+  create: (data: Partial<News>) =>
+    api.post<News>("/news/", data).then((r) => r.data),
+
+  update: (id: number, data: Partial<News>) =>
+    api.patch<News>(`/news/${id}/`, data).then((r) => r.data),
+
+  remove: (id: number) =>
+    api.delete<{ message: string }>(`/news/${id}/`).then((r) => r.data),
 };

@@ -4,9 +4,9 @@ import { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PlatformCard } from "@/components/social/PlatformCard";
+import { BufferStatusCard } from "@/components/social/BufferStatusCard";
 import { TelegramChannelCard } from "@/components/social/TelegramChannelCard";
 import { AddTelegramChannelDialog } from "@/components/social/AddTelegramChannelDialog";
-import { AddPlatformDialog } from "@/components/social/AddPlatformDialog";
 import { usePlatformStore } from "@/store/usePlatformStore";
 import { useTelegramStore } from "@/store/useTelegramStore";
 import { Button } from "@/components/ui/button";
@@ -18,9 +18,6 @@ export default function SocialAccountsPage() {
   const platforms = usePlatformStore((s) => s.items);
   const platformsLoading = usePlatformStore((s) => s.loading);
   const fetchPlatforms = usePlatformStore((s) => s.fetchAll);
-  const testConnection = usePlatformStore((s) => s.testConnection);
-  const fetchConnectionStatus = usePlatformStore((s) => s.fetchConnectionStatus);
-  const getPlatformStatus = usePlatformStore((s) => s.getPlatformStatus);
 
   // ============ Telegram Store ============
   const channels = useTelegramStore((s) => s.items);
@@ -40,17 +37,6 @@ export default function SocialAccountsPage() {
   const handleRefreshAll = async () => {
     await Promise.all([fetchPlatforms(), fetchChannels()]);
     toast.success("All data refreshed");
-  };
-
-  const handleTestPlatform = async (platform: any) => {
-    await testConnection({
-      platform: platform.name,
-      config: platform.config || {},
-    });
-  };
-
-  const handleCheckConnectionStatus = async (id: number) => {
-    await fetchConnectionStatus(id);
   };
 
   // ============ Filter Platforms ============
@@ -80,11 +66,18 @@ export default function SocialAccountsPage() {
         </Button>
       </div>
 
+      {/* ============ Buffer Connection ============ */}
+      <section className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-eyebrow">Buffer Connection</h2>
+        </div>
+        <BufferStatusCard />
+      </section>
+
       {/* ============ Non-Telegram Platforms ============ */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-eyebrow">X · Facebook · Instagram</h2>
-          <AddPlatformDialog />
         </div>
 
         {platformsLoading && nonTelegramPlatforms.length === 0 ? (
@@ -108,9 +101,6 @@ export default function SocialAccountsPage() {
               <PlatformCard
                 key={p.id}
                 platform={p}
-                onTest={() => handleTestPlatform(p)}
-                onCheckStatus={() => handleCheckConnectionStatus(p.id)}
-                getStatus={() => getPlatformStatus(p.id)}
               />
             ))}
           </div>

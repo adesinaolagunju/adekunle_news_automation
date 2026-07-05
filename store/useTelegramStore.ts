@@ -10,18 +10,22 @@ interface TelegramState {
   items: TelegramChannel[];
   loading: boolean;
   busyId: number | null; // channel currently being verified/tested
+  syncingId: number | null; // channel currently being synced
   fetchAll: () => Promise<void>;
   create: (data: Partial<TelegramChannel>) => Promise<TelegramChannel | null>;
   update: (id: number, data: Partial<TelegramChannel>) => Promise<void>;
+  partialUpdate: (id: number, data: Partial<TelegramChannel>) => Promise<void>;
   remove: (id: number) => Promise<void>;
   verify: (id: number) => Promise<void>;
   testPost: (id: number) => Promise<void>;
+  syncInfo: (id: number) => Promise<void>;
 }
 
 export const useTelegramStore = create<TelegramState>((set, get) => ({
   items: [],
   loading: false,
   busyId: null,
+  syncingId: null,
 
   fetchAll: async () => {
     set({ loading: true });
@@ -50,6 +54,15 @@ export const useTelegramStore = create<TelegramState>((set, get) => ({
   update: async (id, data) => {
     try {
       const updated = await telegramApi.update(id, data);
+      set({ items: get().items.map((c) => (c.id === id ? updated : c)) });
+    } catch (err) {
+      toast.error(apiErrorMessage(err, "Failed to update channel"));
+    }
+  },
+
+  partialUpdate: async (id, data) => {
+    try {
+      const updated = await telegramApi.partialUpdate(id, data);
       set({ items: get().items.map((c) => (c.id === id ? updated : c)) });
     } catch (err) {
       toast.error(apiErrorMessage(err, "Failed to update channel"));
@@ -96,6 +109,23 @@ export const useTelegramStore = create<TelegramState>((set, get) => ({
       toast.error(apiErrorMessage(err, "Test post failed"));
     } finally {
       set({ busyId: null });
+    }
+  },
+
+  syncInfo: async (id) => {
+    set({ syncingId: id });
+    try {
+      const res = await telegramApi.syncInfo(id);
+      if (res.success) {
+        toast.success("Channel info synced");
+        get().fetchAll();
+      } else {
+        toast.error(res.error || "Sync failed");
+      }
+    } catch (err) {
+      toast.error(apiErrorMessage(err, "Sync failed"));
+    } finally {
+      set({ syncingId: null });
     }
   },
 }));

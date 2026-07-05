@@ -27,4 +27,7 @@ export const postJobApi = {
     api.post<{ message: string; job_id: number }>(`/posts/${id}/retry/`).then((r) => r.data),
 
   logs: (id: number) => api.get<PostLog[]>(`/posts/${id}/logs/`).then((r) => r.data),
+
+  remove: (id: number) =>
+    api.delete<{ message: string }>(`/posts/${id}/`).then((r) => r.data),
 };
