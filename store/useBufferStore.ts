@@ -62,7 +62,7 @@ export const useBufferStore = create<BufferState>((set, get) => ({
   testConnection: async (accessToken) => {
     set({ testing: true });
     try {
-      const res = await bufferApi.test(accessToken ? { access_token: accessToken } : undefined);
+      const res = await bufferApi.test(accessToken ? { api_key: accessToken } : undefined);
       if (res.success) {
         toast.success(res.message || "Buffer connection successful");
       } else {

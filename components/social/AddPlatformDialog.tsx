@@ -53,7 +53,7 @@ export function AddPlatformDialog({ onSuccess }: AddPlatformDialogProps) {
       return;
     }
     setSaving(true);
-    const ok = await connect({ access_token: accessToken.trim() });
+    const ok = await connect({ api_key: accessToken.trim() });
     if (ok) {
       setAccessToken("");
       setTestResult(null);
@@ -92,14 +92,14 @@ export function AddPlatformDialog({ onSuccess }: AddPlatformDialogProps) {
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-1.5">
             <Label htmlFor="buffer-token" className="text-sm text-wire-muted">
-              Buffer Access Token <span className="text-red-500 ml-0.5">*</span>
+              Buffer API Key <span className="text-red-500 ml-0.5">*</span>
             </Label>
             <Input
               id="buffer-token"
               type="password"
               value={accessToken}
               onChange={(e) => setAccessToken(e.target.value)}
-              placeholder="Paste your Buffer access token"
+              placeholder="Paste your Buffer API key"
               className="h-9 text-sm"
               required
             />
@@ -138,7 +138,7 @@ export function AddPlatformDialog({ onSuccess }: AddPlatformDialogProps) {
               >
                 Buffer Developer Portal
               </a>{" "}
-              to generate an access token.
+              to generate an API key.
             </p>
           </div>
 

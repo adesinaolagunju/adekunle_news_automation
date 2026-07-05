@@ -152,8 +152,7 @@ export interface PlatformBulkConfig {
 // ============ BUFFER ============
 
 export interface BufferConnectPayload {
-  access_token: string;
-  refresh_token?: string;
+  api_key: string;
   token_expires_at?: string;
 }
 
@@ -177,7 +176,7 @@ export interface BufferProfile {
 }
 
 export interface BufferTestPayload {
-  access_token?: string;
+  api_key?: string;
 }
 
 export interface BufferConnectResponse {
