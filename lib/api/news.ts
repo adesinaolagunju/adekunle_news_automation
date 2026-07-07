@@ -1,5 +1,5 @@
 import { api } from "@/lib/axios";
-import { News, NewsDetail, Paginated } from "@/lib/types";
+import { FetchRecentResponse, News, NewsDetail, Paginated, PostAllResponse } from "@/lib/types";
 
 export interface NewsFilters {
   category?: string;
@@ -29,6 +29,12 @@ export const newsApi = {
 
   fetchNow: () =>
     api.post<{ task_id: string; message: string }>("/news/fetch/").then((r) => r.data),
+
+  fetchRecent: () =>
+    api.post<FetchRecentResponse>("/news/fetch_recent/").then((r) => r.data),
+
+  postAll: () =>
+    api.post<PostAllResponse>("/news/post_all/").then((r) => r.data),
 
   repost: (id: number) =>
     api

@@ -12,6 +12,7 @@ import { NewsDetailModal } from "./NewsDetailModal";
 
 export function NewsRow({ item }: { item: News }) {
   const repost = useNewsStore((s) => s.repost);
+  const reposting = useNewsStore((s) => s.reposting[item.id] ?? false);
   const [detailOpen, setDetailOpen] = useState(false);
 
   return (
@@ -48,6 +49,7 @@ export function NewsRow({ item }: { item: News }) {
               <Button
                 size="sm"
                 variant="secondary"
+                loading={reposting}
                 onClick={() => repost(item.id)}
                 title="Post again to all enabled platforms"
               >

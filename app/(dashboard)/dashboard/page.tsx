@@ -8,6 +8,8 @@ import {
   AlertTriangle,
   CheckCircle2,
   RefreshCw,
+  List,
+  SendToBack,
 } from "lucide-react";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -23,6 +25,10 @@ export default function DashboardPage() {
   const fetchDashboard = useStatsStore((s) => s.fetchDashboard);
   const fetchNow = useNewsStore((s) => s.fetchNow);
   const fetching = useNewsStore((s) => s.fetching);
+  const fetchRecent = useNewsStore((s) => s.fetchRecent);
+  const fetchingRecent = useNewsStore((s) => s.fetchingRecent);
+  const postAll = useNewsStore((s) => s.postAll);
+  const postingAll = useNewsStore((s) => s.postingAll);
 
   useEffect(() => {
     fetchDashboard();
@@ -37,17 +43,30 @@ export default function DashboardPage() {
             Live status of the automated news wire.
           </p>
         </div>
-        <Button
-          variant="secondary"
-          loading={fetching}
-          onClick={async () => {
-            await fetchNow();
-            fetchDashboard();
-          }}
-        >
-          <RefreshCw className="h-3.5 w-3.5" />
-          Fetch news now
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="secondary"
+            loading={fetchingRecent}
+            onClick={async () => {
+              await fetchRecent();
+              fetchDashboard();
+            }}
+          >
+            <List className="h-3.5 w-3.5" />
+            Fetch recent
+          </Button>
+          <Button
+            variant="secondary"
+            loading={postingAll}
+            onClick={async () => {
+              await postAll();
+              fetchDashboard();
+            }}
+          >
+            <SendToBack className="h-3.5 w-3.5" />
+            Post all
+          </Button>
+        </div>
       </div>
 
       {loading && !dashboard ? (

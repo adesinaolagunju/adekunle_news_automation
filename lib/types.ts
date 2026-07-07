@@ -411,6 +411,28 @@ export interface LogoutResponse {
   message: string;
 }
 
+// ============ FETCH RECENT ============
+
+export interface FetchRecentResponse {
+  fetched: number;
+  new: number;
+  duplicates: number;
+  outside_window: number;
+  queued: number;
+  pages_fetched: number;
+  early_stopped: boolean;
+}
+
+// ============ POST ALL ============
+
+export interface PostAllResponse {
+  total: number;
+  already_queued: number;
+  filtered_out: number;
+  posted: number;
+  failed: number;
+}
+
 // ============ API RESPONSE HELPERS ============
 
 export interface ApiError {
