@@ -1,5 +1,6 @@
 import { api } from "@/lib/axios";
 import type {
+  BufferAccountStatus,
   BufferConnectPayload,
   BufferConnectResponse,
   BufferStatusResponse,
@@ -10,7 +11,7 @@ import type {
 } from "@/lib/types";
 
 export const bufferApi = {
-  connect: (data: BufferConnectPayload) =>
+  connect: (data: BufferConnectPayload & { name?: string; api_url: string }) =>
     api.post<BufferConnectResponse>("/buffer/connect/", data).then((r) => r.data),
 
   status: () =>
@@ -24,4 +25,10 @@ export const bufferApi = {
 
   test: (data?: BufferTestPayload) =>
     api.post<BufferTestResponse>("/buffer/test/", data ?? {}).then((r) => r.data),
+
+  listAccounts: () =>
+    api.get<BufferAccountStatus[]>("/buffer/accounts/").then((r) => r.data),
+
+  updateAccount: (id: number, data: { name?: string; api_url?: string }) =>
+    api.patch<BufferAccountStatus>(`/buffer/accounts/${id}/`, data).then((r) => r.data),
 };

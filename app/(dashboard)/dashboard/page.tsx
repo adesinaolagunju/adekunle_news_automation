@@ -7,7 +7,6 @@ import {
   Clock,
   AlertTriangle,
   CheckCircle2,
-  RefreshCw,
   List,
   SendToBack,
 } from "lucide-react";
@@ -23,8 +22,6 @@ export default function DashboardPage() {
   const dashboard = useStatsStore((s) => s.dashboard);
   const loading = useStatsStore((s) => s.loading);
   const fetchDashboard = useStatsStore((s) => s.fetchDashboard);
-  const fetchNow = useNewsStore((s) => s.fetchNow);
-  const fetching = useNewsStore((s) => s.fetching);
   const fetchRecent = useNewsStore((s) => s.fetchRecent);
   const fetchingRecent = useNewsStore((s) => s.fetchingRecent);
   const postAll = useNewsStore((s) => s.postAll);
@@ -36,14 +33,14 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-display text-xl font-semibold text-wire-text">Dashboard</h1>
           <p className="text-sm text-wire-muted">
             Live status of the automated news wire.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button
             variant="secondary"
             loading={fetchingRecent}
@@ -51,6 +48,7 @@ export default function DashboardPage() {
               await fetchRecent();
               fetchDashboard();
             }}
+            size="sm"
           >
             <List className="h-3.5 w-3.5" />
             Fetch recent
@@ -62,6 +60,7 @@ export default function DashboardPage() {
               await postAll();
               fetchDashboard();
             }}
+            size="sm"
           >
             <SendToBack className="h-3.5 w-3.5" />
             Post all
@@ -70,13 +69,13 @@ export default function DashboardPage() {
       </div>
 
       {loading && !dashboard ? (
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-6">
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} className="h-24" />
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-6">
           <StatCard label="Total news" value={dashboard?.total_news ?? 0} icon={Newspaper} />
           <StatCard label="News today" value={dashboard?.news_today ?? 0} icon={Newspaper} />
           <StatCard label="Total posts" value={dashboard?.total_posts ?? 0} icon={Send} />
@@ -111,9 +110,9 @@ export default function DashboardPage() {
             )}
             {dashboard &&
               Object.entries(dashboard.platforms).map(([name, stats]) => (
-                <div key={name} className="flex items-center justify-between">
+                <div key={name} className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                   <span className="font-mono text-sm capitalize text-wire-text">{name}</span>
-                  <div className="flex items-center gap-4 text-xs text-wire-muted">
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-wire-muted sm:gap-4">
                     <span className="text-wire-success">{stats.success} ok</span>
                     <span className="text-wire-pending">{stats.pending} pending</span>
                     <span className="text-wire-danger">{stats.failed} failed</span>

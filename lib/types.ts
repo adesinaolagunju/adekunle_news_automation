@@ -49,6 +49,8 @@ export interface News {
   fetched_at: string;
   is_processed: boolean;
   posted_to: string[];
+  buffer_account: number | null;
+  buffer_account_name: string | null;
 }
 
 export interface NewsDetail extends News {
@@ -158,9 +160,14 @@ export interface BufferConnectPayload {
 
 export interface BufferAccountStatus {
   id: number;
+  name: string;
+  api_key?: string;
+  api_url: string;
   connected: boolean;
   connection_status: string;
   token_expires_at: string | null;
+  news_count: number;
+  posted_count: number;
   created_at: string;
   updated_at: string;
 }
@@ -414,6 +421,7 @@ export interface LogoutResponse {
 // ============ FETCH RECENT ============
 
 export interface FetchRecentResponse {
+  accounts_processed: number;
   fetched: number;
   new: number;
   duplicates: number;
@@ -421,6 +429,18 @@ export interface FetchRecentResponse {
   queued: number;
   pages_fetched: number;
   early_stopped: boolean;
+  accounts: AccountFetchResult[];
+}
+
+export interface AccountFetchResult {
+  account_id: number;
+  account_name: string;
+  fetched?: number;
+  new?: number;
+  duplicates?: number;
+  queued?: number;
+  pages_fetched?: number;
+  error?: string;
 }
 
 // ============ POST ALL ============

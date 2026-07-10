@@ -27,8 +27,8 @@ export function NewsFilters() {
   }, [fetchCategories, fetchCountries]);
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
-      <div className="relative w-full max-w-xs">
+    <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+      <div className="relative w-full sm:max-w-xs">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-wire-muted" />
         <Input
           placeholder="Search title or summary…"
@@ -38,7 +38,7 @@ export function NewsFilters() {
       </div>
 
       <Select onValueChange={(v) => setFilters({ category: v === "all" ? undefined : v })}>
-        <SelectTrigger className="w-44">
+        <SelectTrigger className="w-full sm:w-44">
           <SelectValue placeholder="All categories" />
         </SelectTrigger>
         <SelectContent>
@@ -52,7 +52,7 @@ export function NewsFilters() {
       </Select>
 
       <Select onValueChange={(v) => setFilters({ country: v === "all" ? undefined : v })}>
-        <SelectTrigger className="w-44">
+        <SelectTrigger className="w-full sm:w-44">
           <SelectValue placeholder="All countries" />
         </SelectTrigger>
         <SelectContent>
@@ -70,7 +70,7 @@ export function NewsFilters() {
           setFilters({ processed: v === "all" ? undefined : v === "true" })
         }
       >
-        <SelectTrigger className="w-44">
+        <SelectTrigger className="w-full sm:w-44">
           <SelectValue placeholder="All statuses" />
         </SelectTrigger>
         <SelectContent>

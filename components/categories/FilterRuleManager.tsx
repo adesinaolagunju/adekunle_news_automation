@@ -54,9 +54,9 @@ export function FilterRuleManager() {
           article; an <b>include</b> rule limits posting to matches only.
         </p>
 
-        <form onSubmit={handleAdd} className="flex flex-wrap gap-2">
+        <form onSubmit={handleAdd} className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
           <Select value={ruleType} onValueChange={setRuleType}>
-            <SelectTrigger className="w-32">
+            <SelectTrigger className="w-full sm:w-32">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -69,7 +69,7 @@ export function FilterRuleManager() {
           </Select>
 
           <Select value={ruleAction} onValueChange={setRuleAction}>
-            <SelectTrigger className="w-32">
+            <SelectTrigger className="w-full sm:w-32">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -85,12 +85,13 @@ export function FilterRuleManager() {
             placeholder="Value, e.g. crypto"
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            className="flex-1 min-w-[10rem]"
+            className="flex-1 min-w-0 sm:min-w-[10rem]"
           />
 
           <Button type="submit" size="sm">
             <Plus className="h-3.5 w-3.5" />
-            Add rule
+            <span className="hidden sm:inline">Add rule</span>
+            <span className="sm:hidden">Add</span>
           </Button>
         </form>
 
@@ -106,15 +107,15 @@ export function FilterRuleManager() {
           <div className="divide-y divide-wire-border">
             {items.map((r) => (
               <div key={r.id} className="flex items-center justify-between py-2">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 min-w-0">
                   <Badge tone={r.rule_action === "exclude" ? "danger" : "success"}>
                     {r.rule_action}
                   </Badge>
-                  <span className="text-sm text-wire-text">
+                  <span className="text-sm text-wire-text truncate">
                     {r.rule_type}: <span className="text-wire-muted">{r.value}</span>
                   </span>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 shrink-0">
                   <Switch checked={r.enabled} onCheckedChange={() => toggle(r)} />
                   <Button variant="ghost" size="icon" onClick={() => remove(r.id)}>
                     <Trash2 className="h-3.5 w-3.5 text-wire-danger" />

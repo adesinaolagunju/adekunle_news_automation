@@ -28,7 +28,7 @@ export default function PostsPage() {
   }, [fetchList]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
         <h1 className="font-display text-xl font-semibold text-wire-text">Post History</h1>
         <p className="text-sm text-wire-muted">
@@ -36,9 +36,9 @@ export default function PostsPage() {
         </p>
       </div>
 
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
         <Select onValueChange={(v) => setFilters({ status: v === "all" ? undefined : v })}>
-          <SelectTrigger className="w-44">
+          <SelectTrigger className="w-full sm:w-44">
             <SelectValue placeholder="All statuses" />
           </SelectTrigger>
           <SelectContent>
@@ -51,7 +51,7 @@ export default function PostsPage() {
         </Select>
 
         <Select onValueChange={(v) => setFilters({ platform: v === "all" ? undefined : v })}>
-          <SelectTrigger className="w-44">
+          <SelectTrigger className="w-full sm:w-44">
             <SelectValue placeholder="All platforms" />
           </SelectTrigger>
           <SelectContent>
@@ -76,7 +76,9 @@ export default function PostsPage() {
             <p className="py-8 text-center text-sm text-wire-muted">No post jobs match these filters.</p>
           ) : (
             <>
-              <PostJobTable items={items} />
+              <div className="overflow-x-auto -mx-5 sm:-mx-6">
+                <PostJobTable items={items} />
+              </div>
               <div className="mt-4">
                 <Pagination page={page} count={count} onPageChange={setPage} />
               </div>

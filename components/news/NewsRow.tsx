@@ -17,8 +17,8 @@ export function NewsRow({ item }: { item: News }) {
 
   return (
     <>
-      <div className="flex gap-4 border-b border-wire-border py-4 last:border-b-0">
-        <div className="relative h-20 w-28 shrink-0 overflow-hidden rounded bg-wire-surface2">
+      <div className="flex flex-col gap-3 border-b border-wire-border py-4 sm:flex-row sm:gap-4 last:border-b-0">
+        <div className="relative h-32 w-full shrink-0 overflow-hidden rounded bg-wire-surface2 sm:h-20 sm:w-28">
           {item.image ? (
             <Image src={item.image} alt="" fill className="object-cover" unoptimized />
           ) : (
@@ -54,14 +54,14 @@ export function NewsRow({ item }: { item: News }) {
                 title="Post again to all enabled platforms"
               >
                 <Send className="h-3 w-3" />
-                Repost
+                <span className="hidden sm:inline">Repost</span>
               </Button>
             </div>
           </div>
 
           <p className="mt-1 line-clamp-1 text-xs text-wire-muted">{item.summary}</p>
 
-          <div className="mt-2 flex flex-wrap items-center gap-2">
+          <div className="mt-2 flex flex-wrap items-center gap-1.5 sm:gap-2">
             <Badge tone="muted">{item.category || "uncategorized"}</Badge>
             {item.country && <Badge tone="muted">{item.country}</Badge>}
             <span className="text-eyebrow">{item.source}</span>

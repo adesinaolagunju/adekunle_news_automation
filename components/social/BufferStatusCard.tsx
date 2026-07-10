@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { Loader2, CheckCircle, XCircle, LogOut, ExternalLink } from "lucide-react";
+import { Loader2, CheckCircle, LogOut, ExternalLink } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -60,16 +60,16 @@ export function BufferStatusCard() {
     return (
       <Card>
         <CardContent className="p-4">
-          <div className="flex items-start justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex items-start gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-r from-[#405DE6] via-[#5851DB] to-[#E4405F] text-white">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-r from-[#405DE6] via-[#5851DB] to-[#E4405F] text-white">
                 <span className="text-lg font-bold">B</span>
               </div>
-              <div>
+              <div className="min-w-0">
                 <div className="font-display text-sm font-semibold text-wire-text">
                   Buffer Connection
                 </div>
-                <div className="flex items-center gap-2 mt-1">
+                <div className="flex flex-wrap items-center gap-2 mt-1">
                   <Badge tone="success" className="text-xs gap-1">
                     <CheckCircle className="h-3 w-3" />
                     Connected
@@ -80,10 +80,16 @@ export function BufferStatusCard() {
                     </span>
                   )}
                 </div>
+                {account.api_url && (
+                  <div className="mt-1.5">
+                    <span className="text-xs text-wire-muted">News API: </span>
+                    <span className="text-xs text-wire-text font-mono break-all">{account.api_url}</span>
+                  </div>
+                )}
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               <Button
                 variant="ghost"
                 size="sm"
@@ -119,17 +125,19 @@ export function BufferStatusCard() {
               <p className="text-xs font-medium text-wire-muted uppercase tracking-wider">
                 Connected Profiles
               </p>
-              {profiles.map((profile, i) => (
-                <div key={profile.id ?? i} className="flex items-center gap-2 text-xs text-wire-text">
-                  {profile.avatar && (
-                    <img src={profile.avatar} alt="" className="h-4 w-4 rounded-full" />
-                  )}
-                  <span>{profile.service_username || profile.formatted_username || profile.service}</span>
-                  {profile.default && (
-                    <Badge tone="success" className="text-[10px]">default</Badge>
-                  )}
-                </div>
-              ))}
+              <div className="flex flex-wrap gap-2">
+                {profiles.map((profile, i) => (
+                  <div key={profile.id ?? i} className="flex items-center gap-2 text-xs text-wire-text">
+                    {profile.avatar && (
+                      <img src={profile.avatar} alt="" className="h-4 w-4 rounded-full" />
+                    )}
+                    <span>{profile.service_username || profile.formatted_username || profile.service}</span>
+                    {profile.default && (
+                      <Badge tone="success" className="text-[10px]">default</Badge>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </CardContent>

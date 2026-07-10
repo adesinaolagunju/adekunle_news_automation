@@ -22,12 +22,12 @@ export function StatCard({
   }[tone];
 
   return (
-    <div className="rounded-md border border-wire-border bg-wire-surface p-4">
+    <div className="rounded-md border border-wire-border bg-wire-surface p-3 sm:p-4">
       <div className="flex items-center justify-between">
         <span className="text-eyebrow">{label}</span>
         <Icon className={cn("h-4 w-4", toneColor)} />
       </div>
-      <div className="mt-2 font-display text-2xl font-semibold text-wire-text">
+      <div className="mt-2 font-display text-xl sm:text-2xl font-semibold text-wire-text">
         {value}
         {suffix && <span className="ml-1 text-sm text-wire-muted">{suffix}</span>}
       </div>

@@ -35,12 +35,12 @@ export function Header() {
   }
 
   return (
-    <header className="flex h-14 items-center justify-between border-b border-wire-border bg-wire-surface px-4">
-      <div className="flex items-center gap-3">
+    <header className="flex h-14 items-center justify-between border-b border-wire-border bg-wire-surface px-3 sm:px-4">
+      <div className="flex items-center gap-2 sm:gap-3">
         <Button variant="ghost" size="icon" onClick={toggleSidebar}>
           <Menu className="h-4 w-4" />
         </Button>
-        <div className="hidden items-center gap-2 font-mono text-xs text-wire-muted sm:flex">
+        <div className="hidden items-center gap-2 font-mono text-xs text-wire-muted md:flex">
           <Radio className="h-3 w-3 text-wire-success" />
           <span>NEXT RUN:</span>
           <span className="text-wire-text">
@@ -54,8 +54,8 @@ export function Header() {
         </div>
       </div>
 
-      <div className="flex items-center gap-3">
-        <span className="text-sm text-wire-muted">{user?.username}</span>
+      <div className="flex items-center gap-2 sm:gap-3">
+        <span className="text-xs sm:text-sm text-wire-muted">{user?.username}</span>
         <Button variant="ghost" size="icon" onClick={handleLogout} title="Sign out">
           <LogOut className="h-4 w-4" />
         </Button>

@@ -10,10 +10,10 @@ interface NewsState {
   page: number;
   filters: NewsFilters;
   loading: boolean;
-  fetching: boolean; // manual "fetch now" (Celery) in progress
-  fetchingRecent: boolean; // manual "fetch recent" (sync) in progress
-  postingAll: boolean; // "post all unposted" in progress
-  reposting: Record<number, boolean>; // news id → loading
+  fetching: boolean;
+  fetchingRecent: boolean;
+  postingAll: boolean;
+  reposting: Record<number, boolean>;
   creating: boolean;
   setFilters: (f: Partial<NewsFilters>) => void;
   setPage: (p: number) => void;
@@ -81,13 +81,12 @@ export const useNewsStore = create<NewsState>((set, get) => ({
     try {
       const res = await newsApi.fetchRecent();
       const parts: string[] = [];
+      if (res.accounts_processed > 0) parts.push(`${res.accounts_processed} account(s)`);
       if (res.fetched > 0) parts.push(`${res.fetched} fetched`);
       if (res.new > 0) parts.push(`${res.new} new`);
       if (res.duplicates > 0) parts.push(`${res.duplicates} duplicates`);
-      if (res.outside_window > 0) parts.push(`${res.outside_window} outside window`);
       if (res.queued > 0) parts.push(`${res.queued} queued`);
       if (res.pages_fetched > 0) parts.push(`${res.pages_fetched} page(s)`);
-      if (res.early_stopped) parts.push("early stopped");
       const msg = parts.length > 0 ? parts.join(", ") : "No recent news found";
       toast.success(msg);
       get().fetchList();
@@ -103,11 +102,11 @@ export const useNewsStore = create<NewsState>((set, get) => ({
   postAll: async () => {
     set({ postingAll: true });
     try {
-      const res = await newsApi.postAll();
+      const accountId = get().filters.buffer_account;
+      const res = await newsApi.postAll(accountId);
       const parts: string[] = [];
       parts.push(`${res.total} total`);
       if (res.already_queued > 0) parts.push(`${res.already_queued} already queued`);
-      if (res.filtered_out > 0) parts.push(`${res.filtered_out} filtered out`);
       if (res.posted > 0) parts.push(`${res.posted} posted`);
       if (res.failed > 0) parts.push(`${res.failed} failed`);
       const msg = parts.join(", ");

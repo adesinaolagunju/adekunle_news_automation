@@ -43,17 +43,18 @@ export function CountryManager() {
             placeholder="e.g. Nigeria"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            className="flex-1"
           />
           <Input
             placeholder="NG"
-            className="w-20"
+            className="w-16 sm:w-20"
             maxLength={3}
             value={code}
             onChange={(e) => setCode(e.target.value)}
           />
           <Button type="submit" size="sm">
             <Plus className="h-3.5 w-3.5" />
-            Add
+            <span className="hidden sm:inline">Add</span>
           </Button>
         </form>
 

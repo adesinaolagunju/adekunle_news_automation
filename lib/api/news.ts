@@ -9,6 +9,7 @@ export interface NewsFilters {
   processed?: boolean;
   date_from?: string;
   date_to?: string;
+  buffer_account?: number;
   page?: number;
 }
 
@@ -33,8 +34,8 @@ export const newsApi = {
   fetchRecent: () =>
     api.post<FetchRecentResponse>("/news/fetch_recent/").then((r) => r.data),
 
-  postAll: () =>
-    api.post<PostAllResponse>("/news/post_all/").then((r) => r.data),
+  postAll: (buffer_account_id?: number) =>
+    api.post<PostAllResponse>("/news/post_all/", buffer_account_id ? { buffer_account_id } : {}).then((r) => r.data),
 
   repost: (id: number) =>
     api

@@ -7,6 +7,7 @@ import { Pagination } from "@/components/ui/pagination";
 import { NewsFilters } from "@/components/news/NewsFilters";
 import { NewsRow } from "@/components/news/NewsRow";
 import { useNewsStore } from "@/store/useNewsStore";
+import { useAccountStore } from "@/store/useAccountStore";
 
 export default function NewsPage() {
   const items = useNewsStore((s) => s.items);
@@ -15,17 +16,28 @@ export default function NewsPage() {
   const page = useNewsStore((s) => s.page);
   const setPage = useNewsStore((s) => s.setPage);
   const fetchList = useNewsStore((s) => s.fetchList);
+  const setFilters = useNewsStore((s) => s.setFilters);
+  const selectedAccountId = useAccountStore((s) => s.selectedAccountId);
+  const accounts = useAccountStore((s) => s.accounts);
+
+  const selectedAccount = accounts.find((a) => a.id === selectedAccountId);
+
+  useEffect(() => {
+    setFilters({ buffer_account: selectedAccountId ?? undefined });
+  }, [selectedAccountId, setFilters]);
 
   useEffect(() => {
     fetchList();
   }, [fetchList]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
         <h1 className="font-display text-xl font-semibold text-wire-text">News Feed</h1>
         <p className="text-sm text-wire-muted">
-          Articles pulled from the source API, with posting status per platform.
+          {selectedAccount
+            ? `News for ${selectedAccount.name || `Account ${selectedAccount.id}`}`
+            : "All news across all accounts"}
         </p>
       </div>
 

@@ -45,10 +45,11 @@ export function CategoryManager() {
             placeholder="e.g. Politics"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            className="flex-1"
           />
           <Button type="submit" size="sm">
             <Plus className="h-3.5 w-3.5" />
-            Add
+            <span className="hidden sm:inline">Add</span>
           </Button>
         </form>
 

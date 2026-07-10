@@ -7,7 +7,7 @@ import { FilterRuleManager } from "@/components/categories/FilterRuleManager";
 
 export default function CategoriesPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
         <h1 className="font-display text-xl font-semibold text-wire-text">
           Categories & Filters
@@ -18,10 +18,10 @@ export default function CategoriesPage() {
       </div>
 
       <Tabs defaultValue="categories">
-        <TabsList>
-          <TabsTrigger value="categories">Categories</TabsTrigger>
-          <TabsTrigger value="countries">Countries</TabsTrigger>
-          <TabsTrigger value="rules">Filter rules</TabsTrigger>
+        <TabsList className="w-full sm:w-auto">
+          <TabsTrigger value="categories" className="flex-1 sm:flex-none">Categories</TabsTrigger>
+          <TabsTrigger value="countries" className="flex-1 sm:flex-none">Countries</TabsTrigger>
+          <TabsTrigger value="rules" className="flex-1 sm:flex-none">Filter rules</TabsTrigger>
         </TabsList>
 
         <TabsContent value="categories" className="mt-4">
