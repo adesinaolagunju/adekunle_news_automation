@@ -445,12 +445,21 @@ export interface AccountFetchResult {
 
 // ============ POST ALL ============
 
+export interface PostAllError {
+  news_id: number;
+  error: string;
+}
+
 export interface PostAllResponse {
   total: number;
-  already_queued: number;
-  filtered_out: number;
+  batch_size: number;
+  max_workers: number;
+  jobs_created: number;
+  skipped_no_account: number;
   posted: number;
   failed: number;
+  remaining: number;
+  errors: PostAllError[];
 }
 
 // ============ API RESPONSE HELPERS ============

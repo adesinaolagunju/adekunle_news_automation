@@ -105,12 +105,16 @@ export const useNewsStore = create<NewsState>((set, get) => ({
       const accountId = get().filters.buffer_account;
       const res = await newsApi.postAll(accountId);
       const parts: string[] = [];
-      parts.push(`${res.total} total`);
-      if (res.already_queued > 0) parts.push(`${res.already_queued} already queued`);
       if (res.posted > 0) parts.push(`${res.posted} posted`);
       if (res.failed > 0) parts.push(`${res.failed} failed`);
-      const msg = parts.join(", ");
-      toast.success(msg);
+      if (res.skipped_no_account > 0) parts.push(`${res.skipped_no_account} skipped (no account)`);
+      const msg = parts.length > 0 ? parts.join(", ") : "No news to post";
+      if (res.failed > 0 && res.errors?.length > 0) {
+        const firstError = res.errors[0].error;
+        toast.error(`${msg} — ${firstError}`);
+      } else {
+        toast.success(msg);
+      }
       get().fetchList();
       return res;
     } catch (err) {
