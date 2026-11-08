@@ -422,6 +422,7 @@ export interface LogoutResponse {
 
 export interface FetchRecentResponse {
   accounts_processed: number;
+  successful_accounts?: number;
   fetched: number;
   new: number;
   duplicates: number;
@@ -430,6 +431,8 @@ export interface FetchRecentResponse {
   pages_fetched: number;
   early_stopped: boolean;
   accounts: AccountFetchResult[];
+  errors?: AccountFetchResult[];
+  error?: string;
 }
 
 export interface AccountFetchResult {

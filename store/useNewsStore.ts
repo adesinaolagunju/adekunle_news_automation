@@ -88,7 +88,18 @@ export const useNewsStore = create<NewsState>((set, get) => ({
       if (res.queued > 0) parts.push(`${res.queued} queued`);
       if (res.pages_fetched > 0) parts.push(`${res.pages_fetched} page(s)`);
       const msg = parts.length > 0 ? parts.join(", ") : "No recent news found";
-      toast.success(msg);
+
+      // An upstream 404/timeout is reported per account inside a 200 response.
+      // Surface it instead of showing a misleading success toast.
+      const errored = (res.errors ?? res.accounts ?? []).filter((a) => a.error);
+      if (errored.length > 0) {
+        const detail = errored
+          .map((a) => `${a.account_name || `Account ${a.account_id}`}: ${a.error}`)
+          .join("; ");
+        toast.error(`Fetch issue — ${detail}`);
+      } else {
+        toast.success(msg);
+      }
       get().fetchList();
       return res;
     } catch (err) {
